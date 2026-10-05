@@ -1,0 +1,31 @@
+# Firmware and generated build files
+.pio/
+build/
+dist/
+debug/
+.generated_files/
+cmake-build-*/
+compile_commands.json
+*.o
+*.o.d
+*.elf
+*.hex
+*.map
+*.log
+
+# IDE state and machine-specific MPLAB configuration
+.idea/
+queuelogs/
+**/nbproject/private/
+**/nbproject/Makefile-local-*.mk
+**/nbproject/Makefile-genesis.properties
+
+# Local tools and environment files
+.venv/
+.env
+__pycache__/
+
+# Workspace infrastructure
+.agents/
+.codex/
+.aws/
