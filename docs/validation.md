@@ -1,8 +1,31 @@
 # Validation record
 
-Updated on 2026-10-05 after successful PlatformIO setup on Fedora with CLion. The previous XC8 checks were performed in the supplied Linux workspace. No upload or physical-board validation has been recorded.
+Updated on 2026-10-24 after building the I2C firmware. Earlier setup and XC8 checks are retained below. No upload or physical-board validation of the reorganized firmware has been recorded; the original I2C classroom experiment was performed on hardware, as reported by the author.
 
-## Completed
+## I2C validation — 2026-10-24
+
+All four new environments compiled and linked successfully with PlatformIO Core 6.1.19, Atmel AVR platform 5.1.0, framework-arduino-avr 5.2.0, bundled Wire 1.0 and AVR GCC 7.3.0:
+
+```sh
+pio run -e i2c-master -e i2c-slave -e i2c-slave-25 -e i2c-slave-26
+```
+
+| Environment | Compile/link + ELF/HEX | Flash | Static RAM | Hardware |
+| --- | --- | --- | --- | --- |
+| i2c-master | Passed | 4,592 bytes | 452 bytes | Pending |
+| i2c-slave (17) | Passed | 3,868 bytes | 405 bytes | Pending |
+| i2c-slave-25 | Passed | 3,868 bytes | 405 bytes | Pending |
+| i2c-slave-26 | Passed | 3,868 bytes | 405 bytes | Pending |
+
+No warnings came from the lab sources. The Arduino core's `new.cpp` emitted unused-parameter warnings under `-Wextra`. ELF symbol inspection confirmed one `main` and no `setup`/`loop` symbols in each firmware, plus the TWI interrupt handler and the slave receive callback. Static RAM figures do not include stack usage.
+
+Structural checks confirmed one explicit `main()` and no `setup()`/`loop()` definitions in every active C/C++ source. Local links in the root README and I2C README resolve, and `git diff --check` passed. The new environments reuse the same slave source with distinct address definitions; they are four firmware configurations, not four distinct source files.
+
+The installed Wire implementation was inspected to confirm receive callbacks run in the TWI ISR and to check buffer and timeout behavior. The classroom address 3 was replaced with non-reserved address 26; serial output was moved out of the callback, and shared packet copying uses an atomic block.
+
+Physical checks remain: wiring/pull-ups, unique addresses, serial output and rollover, missing-slave diagnosis, timeout behavior, oscilloscope decoding, and the optional six-slave configuration. See the [I2C bench checklist](../labs/i2c-protocol/README.md#conferência-na-bancada).
+
+## Earlier checks — 2026-10-05
 
 ### PlatformIO and CLion on Fedora
 
@@ -44,7 +67,7 @@ All six bare AVR checkpoints compiled and linked successfully for **ATmega2560**
 
 The configuration and documentation were also checked for:
 
-- Ten environments selecting ten distinct, existing source files, with all other lab sources excluded.
+- The original ten environments selecting ten distinct, existing source files, with all other lab sources excluded.
 - Exactly one explicit `main()` per active source and no `setup()` or `loop()` definitions.
 - Arduino environments using `.cpp` and calling `init()`; bare AVR environments using `.c` without Arduino initialization.
 - Local Markdown links resolving to existing files.
@@ -72,7 +95,7 @@ The optional script builds only `labs/*/main.c` and stores output in the ignored
 ## Remaining verification
 
 - **Other PlatformIO environments:** nine environments still lack a recorded successful PlatformIO build. The earlier XC8 results remain valid for the six C examples, but do not replace a PlatformIO check of each environment.
-- **Arduino integration:** build the four C++ environments against the actual Arduino AVR framework. Confirm that their explicit `main()` entry points link correctly; the servo environment also requires Servo 1.2.2.
+- **Earlier Arduino integration:** the original four C++ environments still need builds; the I2C builds above now validate explicit `main()` linking with Arduino AVR and Wire. The servo environment also requires Servo 1.2.2.
 - **Upload and serial access:** confirm USB upload, Fedora device permissions and the 9600-baud monitor for the serial examples.
 - **Physical behavior:** check LED order, sensor idle level and falling-edge detection, counter rollover, timer intervals, servo motion and ADC threshold behavior. Verify the moving average's startup response and compare multiple window sizes with a repeatable potentiometer input.
 - **Debugging:** no new simulator or hardware breakpoint session has been validated with this PlatformIO/CLion setup.
@@ -85,4 +108,4 @@ pio run -e led-sequence -e led-bounce -e led-odd-even-sequence -e external-inter
 
 Use the Mega wiring described in each exercise, including when guide illustrations show an Uno. A generated ELF or HEX does not by itself confirm upload or physical operation.
 
-Git initialization, a local commit and GitHub publication remain separate future steps. The workspace's `.git` directory is still read-only and no initialized project repository was found during this review. The Git ignore rules are ready; instructions are in [setup](setup.md).
+Git is now initialized: the 2026-10-24 review found existing staged I2C additions and preserved their staging. No commit, staging change or publication was performed in this review. The earlier Git setup notes describe the initial workspace state.

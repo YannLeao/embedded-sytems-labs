@@ -1,6 +1,6 @@
 # Embedded Systems Labs
 
-Practical exercises from an embedded systems course, targeting the **ATmega2560 at 16 MHz** on an Arduino Mega 2560. Topics include register-based I/O, interrupts, timers, ADC and servo control.
+Practical exercises from an embedded systems course, targeting the **ATmega2560 at 16 MHz** on an Arduino Mega 2560. Topics include register-based I/O, interrupts, timers, ADC, servo control and I2C communication.
 
 The course uses MPLAB X for simulation and debugging concepts, and Arduino IDE for board uploads. This repository uses **PlatformIO with CLion**, with an independent build environment for each exercise.
 
@@ -24,3 +24,11 @@ pio run -e external-interrupt-and-timer0 -t upload
 - [legacy/mplab/](legacy/mplab/): preserved original MPLAB project.
 
 All active examples target ATmega2560, including exercises whose recycled guide illustrations mention Arduino Uno. Use the Mega pin mappings documented with each exercise.
+
+## I2C lab
+
+The [I2C exercise](labs/i2c-protocol/README.md) has separate master and slave firmware, explicit `main()` entry points, and a destination table for sending to several boards with a `for` loop.
+
+```sh
+pio run -e i2c-master -e i2c-slave -e i2c-slave-25 -e i2c-slave-26
+```
